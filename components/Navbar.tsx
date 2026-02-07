@@ -6,27 +6,21 @@ import NavLinks from "./NavLinks";
 
 /* =========================
    MINIMAL PROFESSIONAL LOGO
+   RESPONSIVE
 ========================= */
-function QuizuLogo() {
+function QuizuLogo({ className = "" }: { className?: string }) {
   return (
     <svg
-      width="24"
-      height="24"
       viewBox="0 0 24 24"
       aria-hidden
-      className="text-gray-900 dark:text-white"
+      className={`shrink-0 ${className}`}
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
     >
       {/* Solid base */}
-      <rect
-        x="3"
-        y="3"
-        width="18"
-        height="18"
-        rx="4"
-        fill="currentColor"
-      />
+      <rect x="3" y="3" width="18" height="18" rx="4" fill="currentColor" />
       {/* Cut-out Q */}
-      <circle cx="12" cy="11" r="4" fill="black" className="dark:fill-black" />
+      <circle cx="12" cy="11" r="4" fill="black" />
       <rect x="14.5" y="14.5" width="3" height="1.6" rx="0.8" fill="black" />
     </svg>
   );
@@ -50,10 +44,10 @@ export default async function Navbar() {
 
     profile = data;
 
-    // 1️⃣ avatar dari profile
+    // avatar dari profile
     avatarUrl = profile?.avatar_url ?? null;
 
-    // 2️⃣ fallback provider (GOOGLE > GITHUB)
+    // fallback provider (GOOGLE > GITHUB)
     if (!avatarUrl) {
       const identities = user.identities ?? [];
       const google = identities.find((i) => i.provider === "google");
@@ -74,35 +68,37 @@ export default async function Navbar() {
         border-b
         bg-white/80 border-gray-200
         dark:bg-black/80 dark:border-zinc-800
-        py-2 
       "
     >
-      <div className="max-w-7xl mx-auto px-4 h-14 flex items-center justify-between">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-14 flex items-center justify-between">
         {/* LEFT */}
-        <div className="flex items-center gap-8">
+        <div className="flex items-center gap-4 sm:gap-6 lg:gap-8">
           {/* LOGO */}
           <Link
             href="/"
-            className="flex items-center gap-2 hover:opacity-80 transition"
+            className="flex items-center gap-2 hover:opacity-80 transition text-gray-900 dark:text-white"
           >
-            <QuizuLogo />
-            <span className="font-medium tracking-tight text-gray-900 dark:text-white">
+            <QuizuLogo className="w-6 h-6 sm:w-7 sm:h-7" />
+            <span className="font-medium tracking-tight text-sm sm:text-base">
               quizu
             </span>
           </Link>
 
-          <NavLinks />
+          {/* NAV LINKS (HIDDEN ON MOBILE) */}
+          <div className="flex">
+            <NavLinks />
+          </div>
         </div>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-3 text-sm">
+        <div className="flex items-center gap-2 sm:gap-3 text-sm">
           {user && profile ? (
             <>
-              {/* CREATE */}
+              {/* CREATE (DESKTOP ONLY) */}
               <Link
                 href="/create"
                 className="
-                  hidden md:flex items-center gap-2
+                  hidden lg:flex items-center gap-2
                   px-3 py-1.5 rounded-md
                   text-xs font-medium
                   border
@@ -120,8 +116,8 @@ export default async function Navbar() {
               {/* ELO */}
               <div
                 className="
-                  flex items-center gap-2
-                  px-3 py-1 rounded-full
+                  flex items-center gap-1.5
+                  px-2.5 py-1 rounded-full
                   text-xs font-mono font-semibold
                   bg-zinc-100 border border-zinc-200 text-zinc-700
                   dark:bg-zinc-900 dark:border-zinc-800 dark:text-zinc-300
@@ -145,7 +141,8 @@ export default async function Navbar() {
               href="/login"
               className="
                 flex items-center gap-2
-                px-4 py-2 rounded-md
+                px-3 sm:px-4 py-2
+                rounded-md
                 text-xs font-semibold
                 bg-black text-white hover:bg-zinc-800
                 dark:bg-white dark:text-black dark:hover:bg-zinc-200
@@ -153,7 +150,7 @@ export default async function Navbar() {
               "
             >
               <LogIn size={14} />
-              Sign In
+              <span className="hidden sm:inline">Sign In</span>
             </Link>
           )}
         </div>
