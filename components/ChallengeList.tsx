@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react"; // 1. Tambahkan useEffect
 import Link from "next/link";
 import { Zap, Code2, CheckCircle2, ArrowUpRight, Loader2 } from "lucide-react";
 import { createClient } from "@/utils/supabase/client";
@@ -13,6 +13,15 @@ export default function ChallengeList({ initialData, solvedIds, searchParams }: 
 
   const supabase = createClient();
   const solvedSet = new Set(solvedIds);
+
+  // 2. TAMBAHKAN KODE INI
+  // Fungsi ini akan mereset list setiap kali hasil search/filter dari server berubah
+  useEffect(() => {
+    setChallenges(initialData);
+    setOffset(initialData.length);
+    // Jika data awal kurang dari 12, berarti tidak ada halaman berikutnya
+    setHasMore(initialData.length >= 12); 
+  }, [initialData]); 
 
   const loadMore = async () => {
     setLoading(true);
@@ -31,8 +40,8 @@ export default function ChallengeList({ initialData, solvedIds, searchParams }: 
     const { data } = await query;
 
     if (data && data.length > 0) {
-      setChallenges([...challenges, ...data]);
-      setOffset(offset + data.length);
+      setChallenges((prev: any) => [...prev, ...data]); // Gunakan prev state agar aman
+      setOffset((prevOffset: number) => prevOffset + data.length);
       if (data.length < LIMIT) setHasMore(false);
     } else {
       setHasMore(false);
