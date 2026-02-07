@@ -4,30 +4,20 @@ import { NextResponse } from "next/server";
 export async function GET(request: Request) {
   const { searchParams, origin } = new URL(request.url);
   const code = searchParams.get("code");
-  const next = searchParams.get("next") ?? "/";
   
-  // 1. CEK ERROR: Kalau user klik Cancel di GitHub, param 'error' bakal muncul
-  const error = searchParams.get("error");
-  if (error) {
-    // Balikin ke Login biar gak 404
-    return NextResponse.redirect(`${origin}/login?error=access_denied`);
-  }
+  // Ambil parameter "next" atau default ke "/"
+  const next = searchParams.get("next") ?? "/";
 
   if (code) {
-    // 2. WAJIB AWAIT: Karena Next.js 15, createClient harus diawait
-    const supabase = await createClient(); 
-    
-    const { error: sessionError } = await supabase.auth.exchangeCodeForSession(code);
-    
-    if (!sessionError) {
-      // Logic buat user profile otomatis (Check & Create)
+    const supabase = await createClient();
+    const { error } = await supabase.auth.exchangeCodeForSession(code);
+
+    if (!error) {
+      // --- LOGIC PROFILE KAMU (Tetap dipertahankan) ---
       const { data: { user } } = await supabase.auth.getUser();
-      
       if (user) {
          const { data: profile } = await supabase.from('profiles').select().eq('id', user.id).single();
-         
          if (!profile) {
-            // Insert profile default untuk user baru
             await supabase.from('profiles').insert({
                 id: user.id,
                 username: user.user_metadata.user_name || user.email?.split('@')[0],
@@ -37,11 +27,25 @@ export async function GET(request: Request) {
             });
          }
       }
-      // Sukses! Masuk ke Home
-      return NextResponse.redirect(`${origin}${next}`);
+      // ------------------------------------------------
+
+      // FIX VERCEL: Deteksi apakah running di localhost atau production
+      const forwardedHost = request.headers.get('x-forwarded-host'); // Host asli Vercel
+      const isLocal = origin.includes('localhost');
+
+      if (isLocal) {
+        // Kalau di laptop, pakai origin biasa
+        return NextResponse.redirect(`${origin}${next}`);
+      } else if (forwardedHost) {
+        // Kalau di Vercel, PAKSA HTTPS biar cookies aman
+        return NextResponse.redirect(`https://${forwardedHost}${next}`);
+      } else {
+        // Fallback
+        return NextResponse.redirect(`${origin}${next}`);
+      }
     }
   }
 
-  // Kalau code gak ada & gak ada error spesifik, balikin ke login juga
+  // Kalau gagal
   return NextResponse.redirect(`${origin}/login?error=auth_code_error`);
 }
