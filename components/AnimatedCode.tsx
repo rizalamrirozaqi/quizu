@@ -124,7 +124,6 @@ export default function AnimatedCode() {
 }
 
 function highlightSyntax(code: string) {
-  // ... (Sama persis kayak function sebelumnya, gak perlu diubah)
   const tokens = code.split(/(".*?"|[a-zA-Z0-9_]+|[{}():;,.<>=+-\[\]|\s])/g).filter(Boolean);
   return tokens.map((token, i) => {
     if (/^(interface|async|function|const|await|return|if|throw|new|try|catch)$/.test(token)) return `<span style="color:#c084fc">${token}</span>`;

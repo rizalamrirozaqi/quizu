@@ -1,10 +1,3 @@
-import {
-  Accordion,
-  AccordionContent,
-  AccordionItem,
-  AccordionTrigger,
-} from "@/components/ui/accordion"; // Pastikan install shadcn accordion kalau mau keren, atau pake html biasa
-
 export default function FAQPage() {
   return (
     <div className="max-w-3xl mx-auto px-6 py-12">
