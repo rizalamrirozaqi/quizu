@@ -69,10 +69,10 @@ export default async function Home() {
 
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-in fade-in slide-in-from-bottom-16 duration-1000 delay-300">
                 {/* Primary Button */}
-                <Link href="/challenges" className="group relative px-8 py-4 font-bold rounded-full overflow-hidden transition-all hover:scale-105 shadow-lg shadow-blue-500/20
+                <Link href="/challenges" className="group relative flex items-center justify-center px-8 py-4 font-bold rounded-full overflow-hidden transition-all hover:scale-105 shadow-lg shadow-blue-500/20
                   bg-gray-900 text-white hover:bg-black
                   dark:bg-white dark:text-black dark:hover:bg-gray-200">
-                   <span className="relative z-10 flex items-center gap-2">
+                   <span className="relative z-10 flex items-center gap-2 ">
                      Start Coding <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform"/>
                    </span>
                 </Link>
