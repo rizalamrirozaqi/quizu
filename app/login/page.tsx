@@ -17,7 +17,8 @@ function LoginContent() {
     setLoading(provider); // Set loading sesuai tombol yang diklik
     
     // Tentukan redirect URL (otomatis detect lagi di localhost atau vercel)
-    const redirectTo = `${window.location.origin}/auth/callback`;
+    // const redirectTo = `${window.location.origin}/auth/callback`;
+    const redirectTo = `${window.location.origin}/auth/callback?next=/home`;
 
     const { error } = await supabase.auth.signInWithOAuth({
       provider: provider,
