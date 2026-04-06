@@ -99,7 +99,7 @@ export default function MultiplayerPage() {
       </p>
 
       {isSearching ? (
-        <div className="vercel-card py-8 px-12 flex flex-col items-center animate-in fade-in zoom-in duration-300">
+        <div className="vercel-card py-8 px-12 flex flex-col items-center animate-in fade-in zoom-in duration-1000">
            <Loader2 size={40} className="animate-spin mb-4 text-blue-500" />
            <h3 className="text-xl font-bold mb-2">Matchmaking...</h3>
            <p className="text-gray-500 text-sm font-mono">{statusText}</p>
@@ -107,12 +107,12 @@ export default function MultiplayerPage() {
       ) : (
         <button 
           onClick={findMatch}
-          className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-black px-8 font-medium text-white transition-all duration-300 hover:bg-neutral-800 hover:w-64 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
+          className="group relative inline-flex h-12 items-center justify-center overflow-hidden rounded-md bg-black px-8 font-medium text-white transition-all duration-1000 hover:bg-neutral-800 hover:w-64 dark:bg-white dark:text-black dark:hover:bg-neutral-200"
         >
           <span className="mr-2 flex items-center gap-2">
             <Users size={18} /> Find Match
           </span>
-          <div className="absolute right-0 translate-x-full opacity-0 transition-all duration-300 group-hover:translate-x-0 group-hover:relative group-hover:opacity-100">
+          <div className="absolute right-0 translate-x-full opacity-0 transition-all duration-700 group-hover:translate-x-0 group-hover:relative group-hover:opacity-100 ">
             →
           </div>
         </button>

@@ -1,0 +1,20 @@
+name : Ping Supabase seminggu sekali
+
+on :
+  schedule :
+    - cron : '0 0 * * 0' # Setiap minggu pada hari Minggu pukul 00:00
+  workflow_dispatch : # Memungkinkan menjalankan workflow secara manual
+
+jobs : 
+  ping :
+    runs-on : ubuntu-latest
+
+    steps :
+      - name : Ping Supabase
+        env :
+          SUPABASE_URL : ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY : ${{ secrets.SUPABASE_ANON_KEY }}
+        run : |
+          curl -X GET https://your-supabase-url.supabase.co/rest/v1/your-endpoint \
+            -H "apikey: $SUPABASE_ANON_KEY" \
+            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
