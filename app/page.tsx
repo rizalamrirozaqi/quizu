@@ -2,9 +2,9 @@ import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
 import { ArrowRight, Terminal, Trophy, Map, TrendingUp } from "lucide-react";
 import * as LucideIcons from "lucide-react"; 
-import HeroBackground from "@/components/HeroBackground"; 
-import AnimatedCode from "@/components/AnimatedCode";
-import CountUp from "@/components/CountUp";
+import HeroBackground from "@/components/home/HeroBackground"; 
+import AnimatedCode from "@/components/home/AnimatedCode";
+import CountUp from "@/components/home/CountUp";
 
 export const dynamic = "force-dynamic"; 
 export const revalidate = 60;

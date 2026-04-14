@@ -11,7 +11,7 @@ import {
   Lock,
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
-import ActivityHeatmap from "@/components/ActivityHeatmap";
+import ActivityHeatmap from "@/components/profile/ActivityHeatmap";
 
 export const dynamic = "force-dynamic";
 

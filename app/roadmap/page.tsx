@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
 import Link from "next/link";
-import RoadmapPreviewSVG from "@/components/RoadmapPreviewSVG";
+import RoadmapPreviewSVG from "@/components/roadmap/RoadmapPreviewSVG";
 
 export const dynamic = "force-dynamic";
 
