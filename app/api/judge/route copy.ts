@@ -4,18 +4,45 @@ export async function POST(request: Request) {
   try {
     const { code, language, testCases, functionName } = await request.json();
 
-    // Normalisasi Nama Bahasa
+    // Normalisasi Bahasa
     let lang = language.toLowerCase();
     if (lang.includes("node")) lang = "javascript";
     if (lang.includes("ts") || lang.includes("type")) lang = "typescript";
     if (lang.includes("py")) lang = "python";
     if (lang.includes("go")) lang = "go";
+    if (lang.includes("html")) lang = "html"; 
 
+    // --- KHUSUS HTML (Validasi String Manual) ---
+    if (lang === "html") {
+        // Logika: Cek apakah tag yang diminta ada di dalam string code user
+        // Format TestCase HTML kita di DB: { input: "check_tags", output: "header,nav,main,footer" }
+        
+        const requiredTags = testCases[0]?.output?.split(",") || []; // ["header", "nav", ...]
+        const codeLower = code.toLowerCase();
+        let missingTags: string[] = [];
+
+        requiredTags.forEach((tag: string) => {
+            const cleanTag = tag.trim();
+            // Cek keberadaan tag, misal <header atau <header>
+            if (!codeLower.includes(`<${cleanTag}`)) {
+                missingTags.push(`<${cleanTag}>`);
+            }
+        });
+
+        if (missingTags.length === 0) {
+            return NextResponse.json({ success: true, message: "PASSED_ALL" });
+        } else {
+            return NextResponse.json({ 
+                success: false, 
+                message: `❌ Missing Semantic Tags:\nUser code does not contain: ${missingTags.join(", ")}` 
+            });
+        }
+    }
+
+    // --- BAHASA PEMROGRAMAN (JS, PY, GO) KIRIM KE PISTON ---
     let fullCode = "";
-    // Gunakan versi yang pasti ada di Piston
     let version = "18.15.0"; 
 
-    // 1. JS & TS
     if (lang === "javascript" || lang === "typescript") {
         version = lang === "typescript" ? "5.0.3" : "18.15.0";
         fullCode = `${code}\n\n`;
@@ -25,7 +52,7 @@ export async function POST(request: Request) {
               let allPassed = true;
               let failedMsg = "";
               testCases.forEach((tc, i) => {
-                const inputArgs = JSON.parse(JSON.stringify(tc.input));
+                const inputArgs = Array.isArray(tc.input) ? tc.input : [tc.input]; // Jaga-jaga input string biasa
                 const result = ${functionName}(...inputArgs);
                 if (JSON.stringify(result) !== JSON.stringify(tc.output)) {
                   allPassed = false;
@@ -37,7 +64,6 @@ export async function POST(request: Request) {
           } catch(e) { console.error(e.message); } 
         `;
     } 
-    // 2. PYTHON
     else if (lang === "python") {
         version = "3.10.0";
         const pyCases = JSON.stringify(testCases);
@@ -56,9 +82,10 @@ try:
 
     for i, tc in enumerate(test_cases):
         inputs = tc['input']
+        if not isinstance(inputs, list): inputs = [inputs] # Handle single input
         expected = tc['output']
         try:
-            result = solution(*inputs)
+            result = ${functionName}(*inputs) # Panggil fungsi dinamis
         except Exception as e:
             print(f"Runtime Error at Case {i+1}: {str(e)}")
             sys.exit(0)
@@ -76,12 +103,9 @@ except Exception as e:
     print(f"System Error: {str(e)}")
         `;
     } 
-    // 3. GO (GOLANG)
     else if (lang === "go") {
         version = "1.16.2";
-        // Escape double quote untuk string literal Go
         const goCases = JSON.stringify(testCases).replace(/"/g, '\\"');
-        
         fullCode = `
 package main
 import (
@@ -102,23 +126,24 @@ func main() {
     }
     
     var cases []TestCase
-    err := json.Unmarshal([]byte(jsonStr), &cases)
-    if err != nil {
+    if err := json.Unmarshal([]byte(jsonStr), &cases); err != nil {
         fmt.Println("System Error: Bad JSON", err)
         return
     }
 
     allPassed := true
-    
     for i, tc := range cases {
-        // Casting input ke int (karena JSON number -> float64 di Go)
-        // Pastikan soalnya tipe datanya INT
+        // Casting logic (Simplified for integer challenges)
+        // Note: For production, need generic reflection or type switch
         a := int(tc.Input[0].(float64))
-        b := int(tc.Input[1].(float64))
+        var b int
+        if len(tc.Input) > 1 { b = int(tc.Input[1].(float64)) }
         
         expected := int(tc.Output.(float64))
         
-        result := solution(a, b)
+        // Asumsi soal Go selalu 1 atau 2 param int untuk saat ini
+        var result int
+        if len(tc.Input) > 1 { result = ${functionName}(a, b) } else { result = ${functionName}(a) }
         
         if result != expected {
             allPassed = false
@@ -126,18 +151,14 @@ func main() {
         }
     }
 
-    if allPassed {
-        fmt.Println("PASSED_ALL")
-    }
+    if allPassed { fmt.Println("PASSED_ALL") }
 }
         `;
     } else {
         return NextResponse.json({ success: false, message: `Language '${lang}' not supported yet.` });
     }
 
-    // --- EXECUTE PISTON ---
-    console.log(`🚀 Sending ${lang} code to Piston...`);
-    
+    // --- KIRIM KE PISTON (Hanya Non-HTML) ---
     const response = await fetch("https://emkc.org/api/v2/piston/execute", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -149,30 +170,22 @@ func main() {
     });
 
     const result = await response.json();
-    
-    // Debug: Lihat respon asli Piston di Terminal
-    console.log("🔍 Piston Response:", JSON.stringify(result).slice(0, 200)); 
 
-    // 1. Cek Error API (Misal: Runtime not found / Rate limit)
     if (result.message && !result.run) {
-        return NextResponse.json({ success: false, message: "Compiler API Error: " + result.message });
+        return NextResponse.json({ success: false, message: "Compiler Error: " + result.message });
     }
-
-    // 2. Cek Compile/Runtime Error (Stderr)
     if (result.run && result.run.stderr) {
-       return NextResponse.json({ success: false, message: "Compilation/Runtime Error:\n" + result.run.stderr });
+       return NextResponse.json({ success: false, message: "Error:\n" + result.run.stderr });
     }
 
-    // 3. Cek Output
     const output = result.run ? result.run.stdout.trim() : "";
     if (output.includes("PASSED_ALL")) {
        return NextResponse.json({ success: true, message: "Validation Passed!" });
     } else {
-       return NextResponse.json({ success: false, message: output || "No output returned (Code ran but printed nothing)." });
+       return NextResponse.json({ success: false, message: output || "No output returned." });
     }
 
   } catch (error: any) {
-    console.error("🔥 Server Error:", error);
     return NextResponse.json({ success: false, message: "Server Error: " + error.message });
   }
 }

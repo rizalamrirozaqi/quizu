@@ -1,20 +1,18 @@
-name : Ping Supabase seminggu sekali
+name: Ping Supabase Biar Gak Kepause
+on:
+  schedule:
+    - cron: '0 0 */3 * *' # Jalan tiap 3 hari sekali
+  workflow_dispatch:
 
-on :
-  schedule :
-    - cron : '0 0 * * 0' # Setiap minggu pada hari Minggu pukul 00:00
-  workflow_dispatch : # Memungkinkan menjalankan workflow secara manual
-
-jobs : 
-  ping :
-    runs-on : ubuntu-latest
-
-    steps :
-      - name : Ping Supabase
-        env :
-          SUPABASE_URL : ${{ secrets.SUPABASE_URL }}
-          SUPABASE_ANON_KEY : ${{ secrets.SUPABASE_ANON_KEY }}
-        run : |
-          curl -X GET "$SUPABASE_URL/rest/v1/users?select=id&limit=1" \
-            -H "apikey: $SUPABASE_ANON_KEY" \
-            -H "Authorization: Bearer $SUPABASE_ANON_KEY"
+jobs:
+  ping:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Ping Supabase
+        env:
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_ANON_KEY: ${{ secrets.SUPABASE_ANON_KEY }}
+        run: |
+          curl -f -X GET "$SUPABASE_URL/rest/v1/profiles?select=id&limit=1" \
+          -H "apikey: $SUPABASE_ANON_KEY" \
+          -H "Authorization: Bearer $SUPABASE_ANON_KEY"

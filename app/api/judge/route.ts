@@ -10,7 +10,7 @@ export async function POST(request: Request) {
     if (lang.includes("ts") || lang.includes("type")) lang = "typescript";
     if (lang.includes("py")) lang = "python";
     if (lang.includes("go")) lang = "go";
-    if (lang.includes("html")) lang = "html"; // Tambahan
+    if (lang.includes("html")) lang = "html"; 
 
     // --- KHUSUS HTML (Validasi String Manual) ---
     if (lang === "html") {
