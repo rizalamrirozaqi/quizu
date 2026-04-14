@@ -2,10 +2,10 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google"; // Font default Next.js yang mirip Vercel
 import "./globals.css";
-import Navbar from "@/components/Navbar"; // <-- 1. Import Navbar
-import OnboardingModal from "@/components/OnboardingModal"; // Import
+import Navbar from "@/components/layout/Navbar"; // <-- 1. Import Navbar
+import OnboardingModal from "@/components/layout/OnboardingModal"; // Import
 import { createClient } from "@/utils/supabase/server";
-import Footer from "@/components/Footer";
+import Footer from "@/components/layout/Footer";
 
 const inter = Inter({ subsets: ["latin"] });
 

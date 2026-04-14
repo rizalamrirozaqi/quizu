@@ -1,6 +1,6 @@
 import { createClient } from "@/utils/supabase/server";
-import ChallengeFilters from "@/components/ChallengeFilters";
-import ChallengeList from "@/components/ChallengeList"; 
+import ChallengeFilters from "@/components/challenges/ChallengeFilters";
+import ChallengeList from "@/components/challenges/ChallengeList"; 
 
 export const dynamic = "force-dynamic";
 
