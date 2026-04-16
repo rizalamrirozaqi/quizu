@@ -6,7 +6,6 @@ import TrendingSection from "@/components/home/TrendingSection";
 
 // Gunakan salah satu. Jika butuh data selalu real-time setiap detik, gunakan force-dynamic.
 // Jika 60 detik cukup, hapus force-dynamic dan biarkan revalidate.
-export const experimental_ppr = true;
 export const revalidate = 60;
 
 export default function Home() {
