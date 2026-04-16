@@ -14,9 +14,8 @@ export default function Home() {
       <HeroBackground />
 
       {/* Hero Section langsung di-render */}
-      <Suspense fallback={<div className="h-screen flex items-center justify-center">Loading Hero...</div>}>
         <HeroSection />
-      </Suspense>
+
 
       {/* Roadmap akan muncul setelah datanya siap, tanpa menahan Hero */}
       <Suspense fallback={<SectionSkeleton title="Learning Paths" />}>
