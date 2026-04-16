@@ -1,9 +1,11 @@
+import { Suspense } from "react";
 import { createClient } from "@/utils/supabase/server";
 import ChallengeFilters from "@/components/challenges/ChallengeFilters";
 import ChallengeList from "@/components/challenges/ChallengeList"; 
 import { Section } from "lucide-react";
 
-export const dynamic = "force-dynamic";
+// export const dynamic = "force-dynamic";
+export const revalidate = 60;
 
 type Props = {
   searchParams: Promise<{ q?: string; lang?: string }>;
@@ -36,6 +38,7 @@ export default async function ChallengesPage({ searchParams }: Props) {
       <div className="max-w-7xl mx-auto px-4 py-12">
         
         {/* Header Section */}
+        <Suspense fallback={<SectionSkeleton title="All Challenges" />}>
           <div className="mb-8">
             <h1 className="text-3xl font-bold mb-2 text-gray-900 dark:text-white transition-colors">
               All Challenges
@@ -44,18 +47,23 @@ export default async function ChallengesPage({ searchParams }: Props) {
               Explore, filter, and solve problems to increase your ELO.
             </p>
           </div>
+        </Suspense>
 
         {/* Filters */}
+        <Suspense fallback={<SectionSkeleton title="Challenge Filters" />}>
           <div className="mb-8">
               <ChallengeFilters />
             </div>
+        </Suspense>
 
         {/* List Card */}
+        <Suspense fallback={<SectionSkeleton title="Challenges" />}>
           <ChallengeList 
             initialData={initialChallenges || []} 
             solvedIds={Array.from(solvedIds)} 
             searchParams={params}
           />
+        </Suspense>
       </div>
     </main>
   );
