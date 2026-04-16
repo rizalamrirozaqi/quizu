@@ -292,7 +292,7 @@ export default function ChallengePage({ params }: { params: Promise<{ slug: stri
                         fontSize: 14, 
                         padding: { top: 16 },
                         scrollBeyondLastLine: false,
-                        automaticLayout: true // Biar layout gak gepeng
+                        automaticLayout: true // biar layout gak gepeng
                     }}
                 />
              </div>
