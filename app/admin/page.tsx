@@ -5,7 +5,13 @@ import { createClient } from "@/utils/supabase/client";
 export default function AdminPage() {
   const supabase = createClient();
   const [form, setForm] = useState({
-    title: "", slug: "", difficulty: "easy", points: 10, language: "javascript", description: "", starter_code: "", test_cases: "[]"
+    title: "", slug: "",
+    difficulty: "easy",
+    points: 10,
+    language: "javascript",
+    description: "",
+    starter_code: "",
+    test_cases: "[]"
   });
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -18,7 +24,7 @@ export default function AdminPage() {
        test_cases: JSON.parse(form.test_cases), // Convert string to JSONB
        function_name: 'solution'
     });
-
+ 
     if (error) alert("Error: " + error.message);
     else { alert("Challenge Created!"); setForm({...form, title: "", slug: ""}); } // Reset
   };
